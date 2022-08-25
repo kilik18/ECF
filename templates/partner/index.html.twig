@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des partenaires{% endblock %}
+
+{% block body %}
+<div>
+    <h1>Liste des partenaires</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Mail</th>
+            <th scope="col">activation</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for partner in partners %}
+            <tr>
+                <th scope="row">{{ partner.id }}</th>
+                <td>{{ partner.partnerName }}</td>
+                <td>{{ partner.partnerMail }}</td>
+                <td>{{ partner.activated }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ path('main') }}" class="btn btn-primary mt-3 col-2 d-flex justify-content-center">Retour à l'accueil</a>
+</div>
+{% endblock %}

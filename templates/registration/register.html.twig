@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <section class="container-fluid">
+
+        <div class="row d-flex align-items-center h-100">
+            <div class="col-12 d-flex justify-content-center">
+
+                {{ form_start(registrationForm) }}
+
+                    <h1 class="text-decoration-underline mb-3 d-flex justify-content-center">Inscription</h1>
+
+                    <div>
+                            {{ form_row(registrationForm.lastname) }}
+                            {{ form_row(registrationForm.firstname) }}
+                            {{ form_row(registrationForm.email) }}
+                            {{ form_row(registrationForm.plainPassword) }}
+                    </div>
+
+                    <div class="mt-3">
+                            {{ form_row(registrationForm.RGPDConsent) }}
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-success mt-3">M'inscrire</button>
+                        <a href="{{ path('app_login') }}" class="btn btn-primary mt-3">Me connecter</a>
+                    </div>
+                    <div>
+                        <a href="{{ path('main') }}" class="btn btn-primary mt-3 d-flex justify-content-center">Retour à l'accueil</a>
+                    </div>
+                {{ form_end(registrationForm) }}
+
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}

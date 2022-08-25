@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('assets/css/index.css') }}">{% endblock %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+
+<h1 class="text-decoration-underline">Accueil</h1>
+
+        <ul class="nav flex-column">
+            <li class="nav-item mt-5">
+                <a class="nav-link active" aria-current="page" href="{{ path('partners') }}">Tableau de bord</a>
+            </li>
+            <li class="nav-item mt-5">
+                <a class="nav-link" href="#">Contact</a>
+            </li>
+
+            {% if app.user %}
+                <li class="nav-item mt-5">
+                    <a class="nav-link" href="{{ path('profile') }}">Mon compte</a>
+                </li>
+                <li class="nav-item mt-5">
+                    <a class="nav-link" href="{{ path('app_logout') }}">Me déconnecter</a>
+                </li>
+            {% else %}
+                    <li class="nav-item mt-5">
+                        <a class="nav-link" href="{{ path('app_login') }}">Me connecter</a>
+                    </li>
+                    <li class="nav-item mt-5">
+                        <a class="nav-link" href="{{ path('app_register') }}">M'inscrire</a>
+                    </li>
+            {% endif %}
+
+        </ul>
+
+    </div>
+{% endblock %}
