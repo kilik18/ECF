@@ -2,18 +2,24 @@
 
 namespace App\Controller;
 
-use App\Repository\PartnerRepository;
+use App\Entity\Partner;
+use App\Entity\Structure;
+use App\Repository\StructureRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/partenaire', name: 'partner_')]
 class PartnerController extends AbstractController
 {
-    #[Route('/partenaires', name: 'partners')]
-    public function index(PartnerRepository $partnerRepository): Response
+    #[Route('/{id}', name: 'list')]
+    public function structureList(Partner $partner, StructureRepository $structureRepository): Response
     {
-        return $this->render('partner/index.html.twig', [
-            'partners' => $partnerRepository->findBy([])
-        ]);
+        $structures = $partner->getStructure();
+
+        return $this->render('partner/partner.html.twig', [
+            'partner' => $partner,
+            'structures' => $structures,
+    ]);
     }
 }

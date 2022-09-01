@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des structures{% endblock %}
+
+    {% block body %}
+
+        <div class="container-fluid">
+            <h1 style="color: white; text-decoration: underline">Liste des structures</h1>
+            <div class="col-12 d-flex mt-5">
+                {% for structure in structures %}
+
+                    <div class="card" style="width: 300px; margin-left: 20px">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ structure. }}){{ structure.address }}</h5>
+                            <p class="card-text">
+                                {{ structure.mail }}
+                                {{ structure.shortDescription }}
+                            </p>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+            <a href="{{ path('partners_list') }}" class="btn btn-primary mt-5 col-2">Retour aux partenaires</a>
+            <a href="{{ path('main') }}" class="btn btn-primary mt-2 col-2 d-flex justify-content-center">Retour à l'accueil</a>
+        </div>
+    {% endblock %}
+
+

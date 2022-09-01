@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\PartnerRepository;
+use App\Repository\StructureRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,8 +21,18 @@ class AdminController extends AbstractController
     }
 
     #[Route('/partenaires', name: 'partners')]
-    public function partnerList()
+    public function partnersList(PartnerRepository $partnerRepository)
     {
+        return $this->render('partners.html.twig', [
+            'partners' => $partnerRepository->findBy([])
+        ]);
+    }
 
+    #[Route('/structures', name: 'structures')]
+    public function structuresList(StructureRepository $structureRepository)
+    {
+        return $this->render('partners.html.twig', [
+            'structures' => $structureRepository->findBy([])
+        ]);
     }
 }

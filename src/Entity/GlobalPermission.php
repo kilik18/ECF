@@ -16,13 +16,15 @@ class GlobalPermission
     #[ORM\Column]
     private ?bool $activated = null;
 
-    #[ORM\ManyToOne(inversedBy: 'globalPermissions')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $creator = null;
 
-    #[ORM\ManyToOne(inversedBy: 'globalPermissions')]
+    #[ORM\ManyToOne(inversedBy: 'GlobalPermission')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'globalPermission')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Partner $partner = null;
+
 
     public function getId(): ?int
     {
@@ -41,14 +43,15 @@ class GlobalPermission
         return $this;
     }
 
-    public function getCreator(): ?User
+
+    public function getUser(): ?User
     {
-        return $this->creator;
+        return $this->user;
     }
 
-    public function setCreator(?User $creator): self
+    public function setUser(?User $user): self
     {
-        $this->creator = $creator;
+        $this->user = $user;
 
         return $this;
     }
@@ -65,3 +68,4 @@ class GlobalPermission
         return $this;
     }
 }
+

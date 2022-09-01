@@ -17,37 +17,41 @@ class Structure
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $structure_name = null;
+    private ?string $address = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $structure_mail = null;
+    private ?string $mail = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $structure_password = null;
+    private ?string $password = null;
 
     #[ORM\Column(length: 100)]
     private ?string $manager_name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $short_description = null;
+    private ?string $shortDescription = null;
 
     #[ORM\Column]
     private ?bool $activated = null;
 
-    #[ORM\ManyToOne(inversedBy: 'structures')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $creator = null;
 
-    #[ORM\ManyToOne(inversedBy: 'structures')]
+
+    #[ORM\ManyToOne(inversedBy: 'structure')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'structure')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Partner $partner = null;
 
-    #[ORM\OneToMany(mappedBy: 'structure', targetEntity: LocalPermission::class, orphanRemoval: true)]
-    private Collection $localPermissions;
+    #[ORM\OneToMany(mappedBy: 'structure', targetEntity: LocalPermission::class)]
+    private Collection $localPermission;
+
+
 
     public function __construct()
     {
-        $this->localPermissions = new ArrayCollection();
+        $this->localPermission = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -55,38 +59,38 @@ class Structure
         return $this->id;
     }
 
-    public function getStructureName(): ?string
+    public function getAddress(): ?string
     {
-        return $this->structure_name;
+        return $this->address;
     }
 
-    public function setStructureName(string $structure_name): self
+    public function setAddress(string $address): self
     {
-        $this->structure_name = $structure_name;
+        $this->address = $address;
 
         return $this;
     }
 
-    public function getStructureMail(): ?string
+    public function getMail(): ?string
     {
-        return $this->structure_mail;
+        return $this->mail;
     }
 
-    public function setStructureMail(string $structure_mail): self
+    public function setMail(string $mail): self
     {
-        $this->structure_mail = $structure_mail;
+        $this->mail = $mail;
 
         return $this;
     }
 
-    public function getStructurePassword(): ?string
+    public function getPassword(): ?string
     {
-        return $this->structure_password;
+        return $this->password;
     }
 
-    public function setStructurePassword(string $structure_password): self
+    public function setPassword(string $password): self
     {
-        $this->structure_password = $structure_password;
+        $this->password = $password;
 
         return $this;
     }
@@ -105,12 +109,12 @@ class Structure
 
     public function getShortDescription(): ?string
     {
-        return $this->short_description;
+        return $this->shortDescription;
     }
 
-    public function setShortDescription(?string $short_description): self
+    public function setShortDescription(?string $shortDescription): self
     {
-        $this->short_description = $short_description;
+        $this->shortDescription = $shortDescription;
 
         return $this;
     }
@@ -127,14 +131,16 @@ class Structure
         return $this;
     }
 
-    public function getCreator(): ?User
+
+
+    public function getUser(): ?User
     {
-        return $this->creator;
+        return $this->user;
     }
 
-    public function setCreator(?User $creator): self
+    public function setUser(?User $user): self
     {
-        $this->creator = $creator;
+        $this->user = $user;
 
         return $this;
     }
@@ -154,15 +160,15 @@ class Structure
     /**
      * @return Collection<int, LocalPermission>
      */
-    public function getLocalPermissions(): Collection
+    public function getLocalPermission(): Collection
     {
-        return $this->localPermissions;
+        return $this->localPermission;
     }
 
     public function addLocalPermission(LocalPermission $localPermission): self
     {
-        if (!$this->localPermissions->contains($localPermission)) {
-            $this->localPermissions->add($localPermission);
+        if (!$this->localPermission->contains($localPermission)) {
+            $this->localPermission->add($localPermission);
             $localPermission->setStructure($this);
         }
 
@@ -171,7 +177,7 @@ class Structure
 
     public function removeLocalPermission(LocalPermission $localPermission): self
     {
-        if ($this->localPermissions->removeElement($localPermission)) {
+        if ($this->localPermission->removeElement($localPermission)) {
             // set the owning side to null (unless already changed)
             if ($localPermission->getStructure() === $this) {
                 $localPermission->setStructure(null);

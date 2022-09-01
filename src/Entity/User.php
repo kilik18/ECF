@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -34,6 +36,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 100)]
     private ?string $lastname = null;
+
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: GlobalPermission::class)]
+    private Collection $GlobalPermission;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Structure::class)]
+    private Collection $structure;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Partner::class, orphanRemoval: true)]
+    private Collection $partner;
+
+    public function __construct()
+    {
+        $this->partners = new ArrayCollection();
+        $this->GlobalPermission = new ArrayCollection();
+        $this->structure = new ArrayCollection();
+        $this->partner = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -125,6 +145,97 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, GlobalPermission>
+     */
+    public function getGlobalPermission(): Collection
+    {
+        return $this->GlobalPermission;
+    }
+
+    public function addGlobalPermission(GlobalPermission $globalPermission): self
+    {
+        if (!$this->GlobalPermission->contains($globalPermission)) {
+            $this->GlobalPermission->add($globalPermission);
+            $globalPermission->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGlobalPermission(GlobalPermission $globalPermission): self
+    {
+        if ($this->GlobalPermission->removeElement($globalPermission)) {
+            // set the owning side to null (unless already changed)
+            if ($globalPermission->getUser() === $this) {
+                $globalPermission->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Structure>
+     */
+    public function getStructure(): Collection
+    {
+        return $this->structure;
+    }
+
+    public function addStructure(Structure $structure): self
+    {
+        if (!$this->structure->contains($structure)) {
+            $this->structure->add($structure);
+            $structure->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStructure(Structure $structure): self
+    {
+        if ($this->structure->removeElement($structure)) {
+            // set the owning side to null (unless already changed)
+            if ($structure->getUser() === $this) {
+                $structure->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Partner>
+     */
+    public function getPartner(): Collection
+    {
+        return $this->partner;
+    }
+
+    public function addPartner(Partner $partner): self
+    {
+        if (!$this->partner->contains($partner)) {
+            $this->partner->add($partner);
+            $partner->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePartner(Partner $partner): self
+    {
+        if ($this->partner->removeElement($partner)) {
+            // set the owning side to null (unless already changed)
+            if ($partner->getUser() === $this) {
+                $partner->setUser(null);
+            }
+        }
 
         return $this;
     }

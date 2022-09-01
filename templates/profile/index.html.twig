@@ -1,9 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProfileController!{% endblock %}
+{% block title %}Mon profil{% endblock %}
 
 {% block body %}
-<div>
-
-</div>
+    <div class="container-fluid">
+        <div class="col-3">
+            <h1 style="color: white; text-decoration: underline">Profil de {{ app.user.firstname }}</h1>
+            <ul class="list-group">
+                <li class="list-group-item">E-MAIL : {{ app.user.email }}</li>
+                <li class="list-group-item">PRENOM : {{ app.user.firstname }}</li>
+                <li class="list-group-item">NOM : {{ app.user.lastname }}</li>
+                <li class="list-group-item"><a href="{{ path('app_logout') }}">Me déconnecter</a></li>
+            </ul>
+        </div>
+        <a href="{{ path('main') }}" class="btn btn-primary mt-5 col-2 d-flex justify-content-center">Retour à l'accueil</a>
+    </div>
 {% endblock %}

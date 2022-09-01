@@ -17,43 +17,45 @@ class Partner
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $partner_name = null;
+    private ?string $name = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $partner_mail = null;
+    private ?string $mail = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $partner_password = null;
+    private ?string $password = null;
 
     #[ORM\Column(length: 200, nullable: true)]
     private ?string $url = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $short_description = null;
+    private ?string $shortDescription = null;
 
     #[ORM\Column(type: Types::BIGINT)]
-    private ?string $technical_contact = null;
+    private ?string $technicalContact = null;
 
     #[ORM\Column(type: Types::BIGINT)]
-    private ?string $commercial_contact = null;
+    private ?string $commercialContact = null;
 
     #[ORM\Column]
     private ?bool $activated = null;
 
-    #[ORM\ManyToOne(inversedBy: 'partners')]
+
+
+    #[ORM\ManyToOne(inversedBy: 'partner')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $creator = null;
+    private ?User $user = null;
+
+    #[ORM\OneToMany(mappedBy: 'partner', targetEntity: GlobalPermission::class)]
+    private Collection $globalPermission;
 
     #[ORM\OneToMany(mappedBy: 'partner', targetEntity: Structure::class, orphanRemoval: true)]
-    private Collection $structures;
-
-    #[ORM\OneToMany(mappedBy: 'partner', targetEntity: GlobalPermission::class, orphanRemoval: true)]
-    private Collection $globalPermissions;
+    private Collection $structure;
 
     public function __construct()
     {
-        $this->structures = new ArrayCollection();
-        $this->globalPermissions = new ArrayCollection();
+        $this->structure = new ArrayCollection();
+        $this->globalPermission = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -61,38 +63,38 @@ class Partner
         return $this->id;
     }
 
-    public function getPartnerName(): ?string
+    public function getName(): ?string
     {
-        return $this->partner_name;
+        return $this->name;
     }
 
-    public function setPartnerName(string $partner_name): self
+    public function setName(string $name): self
     {
-        $this->partner_name = $partner_name;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getPartnerMail(): ?string
+    public function getMail(): ?string
     {
-        return $this->partner_mail;
+        return $this->mail;
     }
 
-    public function setPartnerMail(string $partner_mail): self
+    public function setMail(string $mail): self
     {
-        $this->partner_mail = $partner_mail;
+        $this->mail = $mail;
 
         return $this;
     }
 
-    public function getPartnerPassword(): ?string
+    public function getPassword(): ?string
     {
-        return $this->partner_password;
+        return $this->password;
     }
 
-    public function setPartnerPassword(string $partner_password): self
+    public function setPassword(string $password): self
     {
-        $this->partner_password = $partner_password;
+        $this->password = $password;
 
         return $this;
     }
@@ -111,36 +113,36 @@ class Partner
 
     public function getShortDescription(): ?string
     {
-        return $this->short_description;
+        return $this->shortDescription;
     }
 
-    public function setShortDescription(?string $short_description): self
+    public function setShortDescription(?string $shortDescription): self
     {
-        $this->short_description = $short_description;
+        $this->shortDescription = $shortDescription;
 
         return $this;
     }
 
     public function getTechnicalContact(): ?string
     {
-        return $this->technical_contact;
+        return $this->technicalContact;
     }
 
-    public function setTechnicalContact(string $technical_contact): self
+    public function setTechnicalContact(string $technicalContact): self
     {
-        $this->technical_contact = $technical_contact;
+        $this->technicalContact = $technicalContact;
 
         return $this;
     }
 
     public function getCommercialContact(): ?string
     {
-        return $this->commercial_contact;
+        return $this->commercialContact;
     }
 
-    public function setCommercialContact(string $commercial_contact): self
+    public function setCommercialContact(string $commercialContact): self
     {
-        $this->commercial_contact = $commercial_contact;
+        $this->commercialContact = $commercialContact;
 
         return $this;
     }
@@ -157,44 +159,17 @@ class Partner
         return $this;
     }
 
-    public function getCreator(): ?User
+
+
+
+    public function getUser(): ?User
     {
-        return $this->creator;
+        return $this->user;
     }
 
-    public function setCreator(?User $creator): self
+    public function setUser(?User $user): self
     {
-        $this->creator = $creator;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Structure>
-     */
-    public function getStructures(): Collection
-    {
-        return $this->structures;
-    }
-
-    public function addStructure(Structure $structure): self
-    {
-        if (!$this->structures->contains($structure)) {
-            $this->structures->add($structure);
-            $structure->setPartner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStructure(Structure $structure): self
-    {
-        if ($this->structures->removeElement($structure)) {
-            // set the owning side to null (unless already changed)
-            if ($structure->getPartner() === $this) {
-                $structure->setPartner(null);
-            }
-        }
+        $this->user = $user;
 
         return $this;
     }
@@ -202,15 +177,15 @@ class Partner
     /**
      * @return Collection<int, GlobalPermission>
      */
-    public function getGlobalPermissions(): Collection
+    public function getGlobalPermission(): Collection
     {
-        return $this->globalPermissions;
+        return $this->globalPermission;
     }
 
     public function addGlobalPermission(GlobalPermission $globalPermission): self
     {
-        if (!$this->globalPermissions->contains($globalPermission)) {
-            $this->globalPermissions->add($globalPermission);
+        if (!$this->globalPermission->contains($globalPermission)) {
+            $this->globalPermission->add($globalPermission);
             $globalPermission->setPartner($this);
         }
 
@@ -219,10 +194,40 @@ class Partner
 
     public function removeGlobalPermission(GlobalPermission $globalPermission): self
     {
-        if ($this->globalPermissions->removeElement($globalPermission)) {
+        if ($this->globalPermission->removeElement($globalPermission)) {
             // set the owning side to null (unless already changed)
             if ($globalPermission->getPartner() === $this) {
                 $globalPermission->setPartner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Structure>
+     */
+    public function getStructure(): Collection
+    {
+        return $this->structure;
+    }
+
+    public function addStructure(Structure $structure): self
+    {
+        if (!$this->structure->contains($structure)) {
+            $this->structure->add($structure);
+            $structure->setPartner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStructure(Structure $structure): self
+    {
+        if ($this->structure->removeElement($structure)) {
+            // set the owning side to null (unless already changed)
+            if ($structure->getPartner() === $this) {
+                $structure->setPartner(null);
             }
         }
 
