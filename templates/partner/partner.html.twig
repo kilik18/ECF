@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container-fluid">
-        <h1 style="color: white; text-decoration: underline; text-align: center">Liste des structures de {{ partner.name }}</h1>
+        <h1 class="text-decoration-underline d-flex justify-content-center" style="color: white;">Liste des structures de {{ partner.name }}</h1>
         <div class="container text-center">
         <div class="row" style="border: thick double white">
         {% for structure in partner.structure %}

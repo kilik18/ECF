@@ -5,10 +5,10 @@
 
 {% block body %}
     <div class="container-fluid">
-
-<h1 class="text-decoration-underline" style="color: white;">Accueil</h1>
-
-        <ul class="nav flex-column">
+        {% if app.user %}
+<h1 class="text-decoration-underline d-flex justify-content-center" style="color: white;">Bienvenue {{ app.user.firstname }}</h1>
+        {% endif %}
+        <ul class="nav flex-column" style="width: 250px; border-right: thick double white; border-bottom: thick double white; border-top: thick double white; ">
             <li class="nav-item mt-5">
                 <a class="nav-link active" aria-current="page" href="{{ path('partners_list') }}">Tableau de bord</a>
             </li>
@@ -20,14 +20,14 @@
                 <li class="nav-item mt-5">
                     <a class="nav-link" href="{{ path('profile_details') }}">Mon compte</a>
                 </li>
-                <li class="nav-item mt-5">
+                <li class="nav-item mt-5 mb-5">
                     <a class="nav-link" href="{{ path('app_logout') }}">Me déconnecter</a>
                 </li>
             {% else %}
                     <li class="nav-item mt-5">
                         <a class="nav-link" href="{{ path('app_login') }}">Me connecter</a>
                     </li>
-                    <li class="nav-item mt-5">
+                    <li class="nav-item mt-5 mb-5">
                         <a class="nav-link" href="{{ path('app_register') }}">M'inscrire</a>
                     </li>
             {% endif %}
