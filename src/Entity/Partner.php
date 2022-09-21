@@ -16,19 +16,13 @@ class Partner
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $name = null;
+    #[ORM\Column(length: 50)]
+    private ?string $city = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $mail = null;
-
-    #[ORM\Column(length: 100)]
-    private ?string $password = null;
-
-    #[ORM\Column(length: 200, nullable: true)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $url = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(length: 150, nullable: true)]
     private ?string $shortDescription = null;
 
     #[ORM\Column(type: Types::BIGINT)]
@@ -37,24 +31,11 @@ class Partner
     #[ORM\Column(type: Types::BIGINT)]
     private ?string $commercialContact = null;
 
-    #[ORM\Column]
-    private ?bool $activated = null;
-
-
-
-    #[ORM\ManyToOne(inversedBy: 'partner')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
-    #[ORM\OneToMany(mappedBy: 'partner', targetEntity: GlobalPermission::class)]
+    #[ORM\ManyToMany(targetEntity: GlobalPermission::class, inversedBy: 'partners')]
     private Collection $globalPermission;
-
-    #[ORM\OneToMany(mappedBy: 'partner', targetEntity: Structure::class, orphanRemoval: true)]
-    private Collection $structure;
 
     public function __construct()
     {
-        $this->structure = new ArrayCollection();
         $this->globalPermission = new ArrayCollection();
     }
 
@@ -63,38 +44,14 @@ class Partner
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getCity(): ?string
     {
-        return $this->name;
+        return $this->city;
     }
 
-    public function setName(string $name): self
+    public function setCity(string $city): self
     {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getMail(): ?string
-    {
-        return $this->mail;
-    }
-
-    public function setMail(string $mail): self
-    {
-        $this->mail = $mail;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
+        $this->city = $city;
 
         return $this;
     }
@@ -147,33 +104,6 @@ class Partner
         return $this;
     }
 
-    public function isActivated(): ?bool
-    {
-        return $this->activated;
-    }
-
-    public function setActivated(bool $activated): self
-    {
-        $this->activated = $activated;
-
-        return $this;
-    }
-
-
-
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, GlobalPermission>
      */
@@ -186,7 +116,6 @@ class Partner
     {
         if (!$this->globalPermission->contains($globalPermission)) {
             $this->globalPermission->add($globalPermission);
-            $globalPermission->setPartner($this);
         }
 
         return $this;
@@ -194,42 +123,7 @@ class Partner
 
     public function removeGlobalPermission(GlobalPermission $globalPermission): self
     {
-        if ($this->globalPermission->removeElement($globalPermission)) {
-            // set the owning side to null (unless already changed)
-            if ($globalPermission->getPartner() === $this) {
-                $globalPermission->setPartner(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Structure>
-     */
-    public function getStructure(): Collection
-    {
-        return $this->structure;
-    }
-
-    public function addStructure(Structure $structure): self
-    {
-        if (!$this->structure->contains($structure)) {
-            $this->structure->add($structure);
-            $structure->setPartner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStructure(Structure $structure): self
-    {
-        if ($this->structure->removeElement($structure)) {
-            // set the owning side to null (unless already changed)
-            if ($structure->getPartner() === $this) {
-                $structure->setPartner(null);
-            }
-        }
+        $this->globalPermission->removeElement($globalPermission);
 
         return $this;
     }

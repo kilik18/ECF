@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GlobalPermissionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GlobalPermissionRepository::class)]
@@ -16,15 +18,16 @@ class GlobalPermission
     #[ORM\Column]
     private ?bool $activated = null;
 
+    #[ORM\ManyToMany(targetEntity: Partner::class, mappedBy: 'globalPermission')]
+    private Collection $partners;
 
-    #[ORM\ManyToOne(inversedBy: 'GlobalPermission')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?LocalPermission $localPermission = null;
 
-    #[ORM\ManyToOne(inversedBy: 'globalPermission')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Partner $partner = null;
-
+    public function __construct()
+    {
+        $this->partners = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -43,29 +46,42 @@ class GlobalPermission
         return $this;
     }
 
-
-    public function getUser(): ?User
+    /**
+     * @return Collection<int, Partner>
+     */
+    public function getPartners(): Collection
     {
-        return $this->user;
+        return $this->partners;
     }
 
-    public function setUser(?User $user): self
+    public function addPartner(Partner $partner): self
     {
-        $this->user = $user;
+        if (!$this->partners->contains($partner)) {
+            $this->partners->add($partner);
+            $partner->addGlobalPermission($this);
+        }
 
         return $this;
     }
 
-    public function getPartner(): ?Partner
+    public function removePartner(Partner $partner): self
     {
-        return $this->partner;
+        if ($this->partners->removeElement($partner)) {
+            $partner->removeGlobalPermission($this);
+        }
+
+        return $this;
     }
 
-    public function setPartner(?Partner $partner): self
+    public function getLocalPermission(): ?LocalPermission
     {
-        $this->partner = $partner;
+        return $this->localPermission;
+    }
+
+    public function setLocalPermission(?LocalPermission $localPermission): self
+    {
+        $this->localPermission = $localPermission;
 
         return $this;
     }
 }
-

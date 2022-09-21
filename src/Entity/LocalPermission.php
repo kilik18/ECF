@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LocalPermissionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LocalPermissionRepository::class)]
@@ -16,14 +18,13 @@ class LocalPermission
     #[ORM\Column]
     private ?bool $activated = null;
 
+    #[ORM\ManyToMany(targetEntity: Structure::class, mappedBy: 'localPermission')]
+    private Collection $structures;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?GlobalPermission $globalPermission = null;
-
-    #[ORM\ManyToOne(inversedBy: 'localPermission')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Structure $structure = null;
+    public function __construct()
+    {
+        $this->structures = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -42,27 +43,29 @@ class LocalPermission
         return $this;
     }
 
-
-    public function getGlobalPermission(): ?GlobalPermission
+    /**
+     * @return Collection<int, Structure>
+     */
+    public function getStructures(): Collection
     {
-        return $this->globalPermission;
+        return $this->structures;
     }
 
-    public function setGlobalPermission(GlobalPermission $globalPermission): self
+    public function addStructure(Structure $structure): self
     {
-        $this->globalPermission = $globalPermission;
+        if (!$this->structures->contains($structure)) {
+            $this->structures->add($structure);
+            $structure->addLocalPermission($this);
+        }
 
         return $this;
     }
 
-    public function getStructure(): ?Structure
+    public function removeStructure(Structure $structure): self
     {
-        return $this->structure;
-    }
-
-    public function setStructure(?Structure $structure): self
-    {
-        $this->structure = $structure;
+        if ($this->structures->removeElement($structure)) {
+            $structure->removeLocalPermission($this);
+        }
 
         return $this;
     }

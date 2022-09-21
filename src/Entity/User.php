@@ -3,15 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\Table(name: '`user`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -31,29 +28,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 50)]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 50)]
     private ?string $lastname = null;
 
+    #[ORM\Column]
+    private ?bool $activated = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: GlobalPermission::class)]
-    private Collection $GlobalPermission;
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Partner $partner = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Structure::class)]
-    private Collection $structure;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Partner::class, orphanRemoval: true)]
-    private Collection $partner;
-
-    public function __construct()
-    {
-        $this->partners = new ArrayCollection();
-        $this->GlobalPermission = new ArrayCollection();
-        $this->structure = new ArrayCollection();
-        $this->partner = new ArrayCollection();
-    }
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Structure $structure = null;
 
     public function getId(): ?int
     {
@@ -149,93 +137,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-    /**
-     * @return Collection<int, GlobalPermission>
-     */
-    public function getGlobalPermission(): Collection
+    public function isActivated(): ?bool
     {
-        return $this->GlobalPermission;
+        return $this->activated;
     }
 
-    public function addGlobalPermission(GlobalPermission $globalPermission): self
+    public function setActivated(bool $activated): self
     {
-        if (!$this->GlobalPermission->contains($globalPermission)) {
-            $this->GlobalPermission->add($globalPermission);
-            $globalPermission->setUser($this);
-        }
+        $this->activated = $activated;
 
         return $this;
     }
 
-    public function removeGlobalPermission(GlobalPermission $globalPermission): self
-    {
-        if ($this->GlobalPermission->removeElement($globalPermission)) {
-            // set the owning side to null (unless already changed)
-            if ($globalPermission->getUser() === $this) {
-                $globalPermission->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Structure>
-     */
-    public function getStructure(): Collection
-    {
-        return $this->structure;
-    }
-
-    public function addStructure(Structure $structure): self
-    {
-        if (!$this->structure->contains($structure)) {
-            $this->structure->add($structure);
-            $structure->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStructure(Structure $structure): self
-    {
-        if ($this->structure->removeElement($structure)) {
-            // set the owning side to null (unless already changed)
-            if ($structure->getUser() === $this) {
-                $structure->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Partner>
-     */
-    public function getPartner(): Collection
+    public function getPartner(): ?Partner
     {
         return $this->partner;
     }
 
-    public function addPartner(Partner $partner): self
+    public function setPartner(?Partner $partner): self
     {
-        if (!$this->partner->contains($partner)) {
-            $this->partner->add($partner);
-            $partner->setUser($this);
-        }
+        $this->partner = $partner;
 
         return $this;
     }
 
-    public function removePartner(Partner $partner): self
+    public function getStructure(): ?Structure
     {
-        if ($this->partner->removeElement($partner)) {
-            // set the owning side to null (unless already changed)
-            if ($partner->getUser() === $this) {
-                $partner->setUser(null);
-            }
-        }
+        return $this->structure;
+    }
+
+    public function setStructure(?Structure $structure): self
+    {
+        $this->structure = $structure;
 
         return $this;
     }

@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\StructureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StructureRepository::class)]
@@ -17,37 +16,13 @@ class Structure
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $address = null;
+    private ?string $street = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $mail = null;
-
-    #[ORM\Column(length: 100)]
-    private ?string $password = null;
-
-    #[ORM\Column(length: 100)]
-    private ?string $manager_name = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(length: 150, nullable: true)]
     private ?string $shortDescription = null;
 
-    #[ORM\Column]
-    private ?bool $activated = null;
-
-
-
-    #[ORM\ManyToOne(inversedBy: 'structure')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
-    #[ORM\ManyToOne(inversedBy: 'structure')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Partner $partner = null;
-
-    #[ORM\OneToMany(mappedBy: 'structure', targetEntity: LocalPermission::class)]
+    #[ORM\ManyToMany(targetEntity: LocalPermission::class, inversedBy: 'structures')]
     private Collection $localPermission;
-
-
 
     public function __construct()
     {
@@ -59,50 +34,14 @@ class Structure
         return $this->id;
     }
 
-    public function getAddress(): ?string
+    public function getStreet(): ?string
     {
-        return $this->address;
+        return $this->street;
     }
 
-    public function setAddress(string $address): self
+    public function setStreet(string $street): self
     {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    public function getMail(): ?string
-    {
-        return $this->mail;
-    }
-
-    public function setMail(string $mail): self
-    {
-        $this->mail = $mail;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    public function getManagerName(): ?string
-    {
-        return $this->manager_name;
-    }
-
-    public function setManagerName(string $manager_name): self
-    {
-        $this->manager_name = $manager_name;
+        $this->street = $street;
 
         return $this;
     }
@@ -119,44 +58,6 @@ class Structure
         return $this;
     }
 
-    public function isActivated(): ?bool
-    {
-        return $this->activated;
-    }
-
-    public function setActivated(bool $activated): self
-    {
-        $this->activated = $activated;
-
-        return $this;
-    }
-
-
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function getPartner(): ?Partner
-    {
-        return $this->partner;
-    }
-
-    public function setPartner(?Partner $partner): self
-    {
-        $this->partner = $partner;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, LocalPermission>
      */
@@ -169,7 +70,6 @@ class Structure
     {
         if (!$this->localPermission->contains($localPermission)) {
             $this->localPermission->add($localPermission);
-            $localPermission->setStructure($this);
         }
 
         return $this;
@@ -177,12 +77,7 @@ class Structure
 
     public function removeLocalPermission(LocalPermission $localPermission): self
     {
-        if ($this->localPermission->removeElement($localPermission)) {
-            // set the owning side to null (unless already changed)
-            if ($localPermission->getStructure() === $this) {
-                $localPermission->setStructure(null);
-            }
-        }
+        $this->localPermission->removeElement($localPermission);
 
         return $this;
     }
